@@ -7,6 +7,9 @@
 (function () {
   "use strict";
 
+  // Web3Forms submission endpoint + access key (delivers to willie.smit@gmail.com)
+  const WEB3FORMS_KEY = "0ccd2243-d4b7-4b5f-a152-dc5dc2f6f82b";
+
   // option helper: strings or {v,l,branch}
   const O = (...a) => a.map((x) => (typeof x === "string" ? { v: x, l: x } : x));
 
@@ -470,14 +473,15 @@
     mount.innerHTML = `
       <p class="step-eyebrow">Almost done</p>
       <h2 class="step-title">Review & save</h2>
-      <p class="step-intro">This is exactly what we'll build the ${state.mode === "topup" ? "kit" : "profile"} from. Save it to your drive — it stays on your computer.</p>
+      <p class="step-intro">This is exactly what we'll build the ${state.mode === "topup" ? "kit" : "profile"} from. Send it to Axum Learning so we can start, or save your own copy.</p>
       <pre class="review-pre">${escapeHTML(md)}</pre>
       <div id="savedBanner"></div>
       <div class="wizard-actions">
         <button class="button-secondary" id="edit" type="button">Back to answers</button>
         <span class="spacer"></span>
         <button class="button-secondary" id="dljson" type="button">Save JSON</button>
-        <button class="button" id="dlmd" type="button">Save to my drive (.md)</button>
+        <button class="button-secondary" id="dlmd" type="button">Save .md copy</button>
+        <button class="button" id="sendaxum" type="button">Send to Axum Learning</button>
       </div>
       <div class="wizard-actions" style="margin-top:0.6rem">
         <button class="button-link" id="startover" type="button">Start over</button>
@@ -492,6 +496,38 @@
       const json = JSON.stringify({ meta: meta(), answers: state.answers }, null, 2);
       const ok = await saveFile(fname + ".json", json, "application/json");
       if (ok) banner(`Saved <strong>${escapeHTML(fname)}.json</strong>.`);
+    });
+    mount.querySelector("#sendaxum").addEventListener("click", async (e) => {
+      const btn = e.currentTarget;
+      const m = meta();
+      btn.disabled = true;
+      banner("Sending to Axum Learning…");
+      try {
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_KEY,
+            subject: `Completed questionnaire — ${m.student || "student"} (${m.subject || "subject"})`,
+            from_name: "Axum Learning questionnaire",
+            student: m.student,
+            subject_area: m.subject,
+            programme: m.programme,
+            type: m.type,
+            completed_intake: md,
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          banner(`✓ Sent to Axum Learning. We'll be in touch about the ${state.mode === "topup" ? "kit" : "profile"}.`);
+        } else {
+          btn.disabled = false;
+          banner("Sorry, sending failed. Please save the .md copy and email it to willie.smit@gmail.com.");
+        }
+      } catch (err) {
+        btn.disabled = false;
+        banner("Sorry, sending failed. Please save the .md copy and email it to willie.smit@gmail.com.");
+      }
     });
   }
   function banner(html) {

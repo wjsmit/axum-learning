@@ -48,7 +48,11 @@
           <div class="card">
             <span class="meta">Contact form</span>
             <h3>Ask a question</h3>
-            <form action="mailto:hello@axumlearning.com" method="post" enctype="text/plain" style="margin-top: 1rem">
+            <form id="contactForm" action="https://api.web3forms.com/submit" method="POST" style="margin-top: 1rem">
+              <input type="hidden" name="access_key" value="0ccd2243-d4b7-4b5f-a152-dc5dc2f6f82b" />
+              <input type="hidden" name="subject" value="New Axum Learning contact message" />
+              <input type="hidden" name="from_name" value="Axum Learning website" />
+              <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
               <label>
                 Your name
                 <input type="text" name="name" placeholder="Jane Smith" />
@@ -62,10 +66,33 @@
                 <textarea name="message" placeholder="How can we help?"></textarea>
               </label>
               <div class="form-actions">
-                <button class="button" type="submit">Send email</button>
-                <span class="note">Connect this form to your preferred email service when ready.</span>
+                <button class="button" type="submit">Send message</button>
               </div>
+              <div id="contactResult" class="note" style="margin-top:0.6rem" role="status" aria-live="polite"></div>
             </form>
+            <script>
+              (function () {
+                var form = document.getElementById("contactForm");
+                var result = document.getElementById("contactResult");
+                form.addEventListener("submit", function (e) {
+                  e.preventDefault();
+                  result.textContent = "Sending…";
+                  fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                      if (data.success) {
+                        form.reset();
+                        result.innerHTML = "✓ Thank you — your message has been sent.";
+                      } else {
+                        result.textContent = "Sorry, something went wrong. Please email willie.smit@gmail.com directly.";
+                      }
+                    })
+                    .catch(function () {
+                      result.textContent = "Sorry, something went wrong. Please email willie.smit@gmail.com directly.";
+                    });
+                });
+              })();
+            </script>
           </div>
           <div class="card">
             <span class="meta">Good reasons to get in touch</span>

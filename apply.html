@@ -45,7 +45,11 @@
 
       <section class="section">
         <div class="page-shell form-wrap">
-          <form action="mailto:hello@axumlearning.com" method="post" enctype="text/plain">
+          <form id="applyForm" action="https://api.web3forms.com/submit" method="POST">
+            <input type="hidden" name="access_key" value="0ccd2243-d4b7-4b5f-a152-dc5dc2f6f82b" />
+            <input type="hidden" name="subject" value="New Axum Learning application" />
+            <input type="hidden" name="from_name" value="Axum Learning website" />
+            <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
             <div class="form-grid">
               <label>
                 Parent name
@@ -115,7 +119,31 @@
               <a class="button-secondary" href="questionnaire.html">Start the questionnaire now →</a>
               <span class="note">After submission, the questionnaire email should be sent automatically.</span>
             </div>
+            <div id="applyResult" class="note" style="margin-top:0.6rem" role="status" aria-live="polite"></div>
           </form>
+          <script>
+            (function () {
+              var form = document.getElementById("applyForm");
+              var result = document.getElementById("applyResult");
+              form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                result.textContent = "Sending…";
+                fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } })
+                  .then(function (r) { return r.json(); })
+                  .then(function (data) {
+                    if (data.success) {
+                      form.reset();
+                      result.innerHTML = "✓ Thank you — your application has been sent. Check your email for the questionnaire link.";
+                    } else {
+                      result.textContent = "Sorry, something went wrong. Please email willie.smit@gmail.com directly.";
+                    }
+                  })
+                  .catch(function () {
+                    result.textContent = "Sorry, something went wrong. Please email willie.smit@gmail.com directly.";
+                  });
+              });
+            })();
+          </script>
           <div class="subtle-band" style="margin-top: 1rem">
             <strong>What happens next</strong>
             <p style="margin: 0.45rem 0 0; color: var(--muted)">
