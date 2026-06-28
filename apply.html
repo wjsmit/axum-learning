@@ -9,6 +9,7 @@
       content="Apply for a premium custom kit from Axum Learning and receive the questionnaire link by email."
     />
     <link rel="stylesheet" href="styles.css" />
+    <script src="locale.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -64,14 +65,8 @@
                 <input type="text" name="child_name" placeholder="Amina" />
               </label>
               <label>
-                School year
-                <select name="year">
-                  <option>Year 7</option>
-                  <option>Year 8</option>
-                  <option>Year 9</option>
-                  <option>Year 10</option>
-                  <option>Year 11</option>
-                </select>
+                Exam board / programme
+                <select name="programme" data-locale-programmes></select>
               </label>
               <label>
                 Subject
@@ -90,19 +85,6 @@
               <label>
                 Textbook used
                 <input type="text" name="textbook" placeholder="e.g. Cambridge, Hodder, Collins" />
-              </label>
-              <label>
-                Cambridge level
-                <select name="level">
-                  <option value="">Select a level…</option>
-                  <option>Lower Secondary — Stage 7</option>
-                  <option>Lower Secondary — Stage 8</option>
-                  <option>Lower Secondary — Stage 9</option>
-                  <option>IGCSE — Core</option>
-                  <option>IGCSE — Extended</option>
-                  <option>O Level</option>
-                  <option>Not sure</option>
-                </select>
               </label>
             </div>
 

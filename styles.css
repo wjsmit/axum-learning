@@ -166,6 +166,37 @@ img {
   color: var(--text);
 }
 
+.locale-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid rgba(31, 42, 68, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.locale-picker__icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.locale-picker__select {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+  cursor: pointer;
+  max-width: 11rem;
+}
+
+.locale-picker__select:focus-visible {
+  outline: 2px solid var(--accent, #1f2a44);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 .button,
 .button-secondary,
 .button-link,

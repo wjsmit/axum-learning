@@ -9,6 +9,7 @@
       content="Axum Learning creates premium custom Cambridge kits for Mathematics, English, Science, and Physics. Each kit is matched to the child, the topic, and the chapter."
     />
     <link rel="stylesheet" href="styles.css" />
+    <script src="locale.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -212,10 +213,10 @@
             <div class="card" style="background: rgba(255,255,255,0.84)">
               <h3>Starting price</h3>
               <p class="price" style="margin-top: 0.2rem">
-                $30 <small>/ topic</small>
+                <span data-price-usd="30">$30</span> <small>/ topic</small>
               </p>
               <p class="price" style="font-size: 2.35rem; margin-top: 0.5rem">
-                $50 <small>/ chapter</small>
+                <span data-price-usd="50">$50</span> <small>/ chapter</small>
               </p>
               <p class="note">Use this as the visible entry point while we test the market.</p>
               <a class="button" href="pricing.html">View pricing page</a>

@@ -14,7 +14,21 @@
   const O = (...a) => a.map((x) => (typeof x === "string" ? { v: x, l: x } : x));
 
   // ---- field/value constants reused for branching ----
-  const PROG_IGCSE = "Cambridge IGCSE (Years 10–11)";
+  // Every exam board is accepted — kits are built to order, so the build pipeline
+  // sources whichever board's framework the family picks. Mirrors data/locale-map.json.
+  const BOARDS = O(
+    "Cambridge (CAIE)",
+    "Pearson Edexcel International",
+    "Oxford International AQA",
+    "AQA",
+    "Pearson Edexcel (UK)",
+    "OCR",
+    "WJEC / Eduqas",
+    "CCEA",
+    "Other / not sure",
+  );
+  // Upper-secondary years where a Core/Extended (or Foundation/Higher) tier applies.
+  const UPPER_SEC = ["Year 10 (14–15)", "Year 11 (15–16)"];
   const HELPER = "With a parent or tutor helping";
   const NEEDS_NONE = "Nothing applies / prefer not to say";
 
@@ -135,9 +149,9 @@
       part: "Part 2 · The Grown-up's Bit",
       title: "Curriculum & level",
       fields: [
-        { id: "P4", type: "single", label: "Which Cambridge programme?", options: O("Cambridge Lower Secondary (Stages 7–9)", PROG_IGCSE, "Not sure") },
-        { id: "P5_tier", type: "single", optional: true, label: "Tier (IGCSE)", help: "Only if they're on IGCSE.", showIf: (a) => a.P4 === PROG_IGCSE, options: O("Core","Extended","Not sure yet") },
-        { id: "P5_target", type: "text", optional: true, label: "Target grade they're aiming for", help: "e.g. a 5, a 7, an A*.", showIf: (a) => a.P4 === PROG_IGCSE, placeholder: "Target grade" },
+        { id: "P4", type: "single", label: "Which exam board / programme?", help: "We build to order, so any board is fine. Pick 'Other / not sure' if you're unsure.", options: BOARDS },
+        { id: "P5_tier", type: "single", optional: true, label: "Tier (IGCSE / GCSE)", help: "Only for the IGCSE/GCSE years.", showIf: (a) => UPPER_SEC.includes(a.P2), options: O("Core / Foundation","Extended / Higher","Not sure yet") },
+        { id: "P5_target", type: "text", optional: true, label: "Target grade they're aiming for", help: "e.g. a 5, a 7, an A*.", showIf: (a) => UPPER_SEC.includes(a.P2), placeholder: "Target grade" },
         { id: "P6", type: "single", label: "Which subject is this profile for?", help: "One profile per subject.", options: O("Mathematics","English","Science (Lower Secondary)","Physics (IGCSE & above)") },
         { id: "P7", type: "single", optional: true, label: "Which textbook / resource do you use?", options: O("Cambridge University Press","Hodder","Collins","Oxford","None / not sure","Other") },
       ],
@@ -606,6 +620,17 @@
   function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "x"; }
   function escapeHTML(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
   function escapeAttr(s) { return escapeHTML(s); }
+
+  // Pre-fill the country from auto-detection (locale.js). The visitor can still edit
+  // it, and the header picker stays the source of truth for currency.
+  if (window.Locale && window.Locale.ready) {
+    window.Locale.ready.then(function () {
+      if (!state.answers.P3_country) {
+        var c = window.Locale.country();
+        if (c && c.code !== "INTL") { state.answers.P3_country = c.name; save(); if (!state.reviewing) render(); }
+      }
+    });
+  }
 
   render();
 })();

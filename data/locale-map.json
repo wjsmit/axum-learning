@@ -1,0 +1,99 @@
+{
+  "_meta": {
+    "version": "2026-06-28",
+    "purpose": "Single source for the country/UX layer: country -> currency + PPP price tier + which local 'year' label to show. The CONTENT engine never reads this; it only changes the displayed label, the displayed price, and the stored country. The canonical stored value for a child's level is ALWAYS the Cambridge stage id (e.g. 'stage-7'), never a localized label.",
+    "canonical_rule": "stage id is authoritative. Year / Grade / Class are approximate equivalence labels shown to help a parent recognise the stage. Objective codes (e.g. 7Nf.05) are identical worldwide.",
+    "price_model": "displayed_price = round_local( usd_base_price * tier.ppp_multiplier * fx[USD->currency] ). usd_base_price lives with the pricing config (NOT here). FX is fetched live at display time and intentionally NOT stored here (rates go stale).",
+    "labels_are_verified_only": "A country is mapped to a localized label system ONLY where the year-mapping is well established (UK, US, India/Pakistan/Bangladesh, South Africa). Every other country defaults to 'stage', which is always correct for Cambridge. Add more systems only after verifying the local age->year mapping."
+  },
+
+  "label_systems": {
+    "stage": { "word": "Stage", "note": "Cambridge canonical. Shown to everyone not explicitly mapped." },
+    "year":  { "word": "Year",  "note": "England/Wales. Year N == Stage N (1:1)." },
+    "grade": { "word": "Grade", "note": "USA & South Africa. Grade == Stage - 1." },
+    "class": { "word": "Class", "note": "India / Pakistan / Bangladesh. Class == Stage - 1 (word differs from Grade)." }
+  },
+
+  "stages": [
+    { "id": "stage-1", "phase": "primary",          "age": "5–6",   "labels": { "stage": "Stage 1", "year": "Year 1",  "grade": "Kindergarten", "class": "Pre-primary" } },
+    { "id": "stage-2", "phase": "primary",          "age": "6–7",   "labels": { "stage": "Stage 2", "year": "Year 2",  "grade": "Grade 1",      "class": "Class 1" } },
+    { "id": "stage-3", "phase": "primary",          "age": "7–8",   "labels": { "stage": "Stage 3", "year": "Year 3",  "grade": "Grade 2",      "class": "Class 2" } },
+    { "id": "stage-4", "phase": "primary",          "age": "8–9",   "labels": { "stage": "Stage 4", "year": "Year 4",  "grade": "Grade 3",      "class": "Class 3" } },
+    { "id": "stage-5", "phase": "primary",          "age": "9–10",  "labels": { "stage": "Stage 5", "year": "Year 5",  "grade": "Grade 4",      "class": "Class 4" } },
+    { "id": "stage-6", "phase": "primary",          "age": "10–11", "labels": { "stage": "Stage 6", "year": "Year 6",  "grade": "Grade 5",      "class": "Class 5" } },
+    { "id": "stage-7", "phase": "lower-secondary",  "age": "11–12", "labels": { "stage": "Stage 7", "year": "Year 7",  "grade": "Grade 6",      "class": "Class 6" } },
+    { "id": "stage-8", "phase": "lower-secondary",  "age": "12–13", "labels": { "stage": "Stage 8", "year": "Year 8",  "grade": "Grade 7",      "class": "Class 7" } },
+    { "id": "stage-9", "phase": "lower-secondary",  "age": "13–14", "labels": { "stage": "Stage 9", "year": "Year 9",  "grade": "Grade 8",      "class": "Class 8" } },
+    { "id": "igcse-1", "phase": "upper-secondary",  "age": "14–15", "labels": { "stage": "IGCSE / O Level (Year 1)", "year": "Year 10", "grade": "Grade 9",  "class": "Class 9" } },
+    { "id": "igcse-2", "phase": "upper-secondary",  "age": "15–16", "labels": { "stage": "IGCSE / O Level (Year 2)", "year": "Year 11", "grade": "Grade 10", "class": "Class 10" } },
+    { "id": "as",      "phase": "advanced",         "age": "16–17", "labels": { "stage": "AS Level", "year": "Year 12", "grade": "Grade 11",     "class": "Class 11" } },
+    { "id": "a-level", "phase": "advanced",         "age": "17–18", "labels": { "stage": "A Level",  "year": "Year 13", "grade": "Grade 12",     "class": "Class 12" } }
+  ],
+
+  "price_tiers": {
+    "t1": { "ppp_multiplier": 1.0,  "label": "High income" },
+    "t2": { "ppp_multiplier": 0.6,  "label": "Upper-middle" },
+    "t3": { "ppp_multiplier": 0.45, "label": "Middle" },
+    "t4": { "ppp_multiplier": 0.3,  "label": "Value" }
+  },
+  "_price_tiers_note": "Multipliers are a STARTING ASSUMPTION to validate against willingness-to-pay, not market truth. They encode purchasing power relative to the USD base; FX is applied separately at display time.",
+
+  "default_programme": "cambridge",
+  "programmes": [
+    { "id": "cambridge",   "name": "Cambridge (CAIE)",            "short": "Cambridge",    "scope": "international", "level_system": "stage", "proven": true,  "note": "Cambridge Lower Secondary (Stage 7–9), IGCSE, International AS/A Level." },
+    { "id": "edexcel-intl","name": "Pearson Edexcel International","short": "Edexcel Int'l","scope": "international", "level_system": "year",  "proven": false, "note": "iLowerSecondary, International GCSE, International A Level." },
+    { "id": "oxford-aqa",  "name": "Oxford International AQA",     "short": "Oxford AQA",   "scope": "international", "level_system": "year",  "proven": false, "note": "International GCSE / A Level." },
+    { "id": "aqa",         "name": "AQA",                         "short": "AQA",          "scope": "uk-domestic",  "level_system": "year",  "proven": false, "note": "UK GCSE / A Level." },
+    { "id": "edexcel-uk",  "name": "Pearson Edexcel (UK)",        "short": "Edexcel UK",   "scope": "uk-domestic",  "level_system": "year",  "proven": false, "note": "UK GCSE / A Level." },
+    { "id": "ocr",         "name": "OCR",                         "short": "OCR",          "scope": "uk-domestic",  "level_system": "year",  "proven": false, "note": "UK GCSE / A Level." },
+    { "id": "wjec-eduqas", "name": "WJEC / Eduqas",               "short": "WJEC",         "scope": "uk-domestic",  "level_system": "year",  "proven": false, "note": "Wales + England GCSE / A Level." },
+    { "id": "ccea",        "name": "CCEA",                        "short": "CCEA",         "scope": "uk-domestic",  "level_system": "year",  "proven": false, "note": "Northern Ireland GCSE / A Level." },
+    { "id": "other",       "name": "Other / not sure",           "short": "Other",        "scope": "other",        "level_system": "stage", "proven": false, "note": "Free-text board; the build pipeline sources the right framework." }
+  ],
+  "_programmes_note": "Kits are built TO ORDER, so the questionnaire ACCEPTS EVERY board. The programme is still a content-layer choice — it sets which framework/past-papers the build pipeline (Stage 1) sources, and which objective-code scheme is used; it never changes the country/price layer. 'proven' = we've already shipped a kit for that board (used only for internal confidence/marketing, NOT to gate selection). 'level_system' is the default label system to show for that board's levels when a country-specific one doesn't override (Cambridge → Stage; most boards → Year/GCSE). UK-domestic boards have no lower-secondary 'stage' framework — show KS3 'Year 7–9' then GCSE/A Level.",
+
+  "default_country": "INTL",
+  "countries": [
+    { "code": "INTL", "name": "International (other)", "currency": "USD", "locale": "en",    "tier": "t1", "labels": "stage", "detect": false },
+
+    { "code": "GB", "name": "United Kingdom",        "currency": "GBP", "locale": "en-GB", "tier": "t1", "labels": "year",  "detect": true },
+    { "code": "US", "name": "United States",         "currency": "USD", "locale": "en-US", "tier": "t1", "labels": "grade", "detect": true },
+    { "code": "AE", "name": "United Arab Emirates",  "currency": "AED", "locale": "en-AE", "tier": "t1", "labels": "stage", "detect": true },
+    { "code": "QA", "name": "Qatar",                 "currency": "QAR", "locale": "en",    "tier": "t1", "labels": "stage", "detect": true },
+    { "code": "KW", "name": "Kuwait",                "currency": "KWD", "locale": "en",    "tier": "t1", "labels": "stage", "detect": true },
+    { "code": "SG", "name": "Singapore",             "currency": "SGD", "locale": "en-SG", "tier": "t1", "labels": "stage", "detect": true },
+    { "code": "HK", "name": "Hong Kong",             "currency": "HKD", "locale": "en-HK", "tier": "t1", "labels": "stage", "detect": true },
+    { "code": "AU", "name": "Australia",             "currency": "AUD", "locale": "en-AU", "tier": "t1", "labels": "stage", "detect": true },
+    { "code": "NZ", "name": "New Zealand",           "currency": "NZD", "locale": "en-NZ", "tier": "t1", "labels": "stage", "detect": true },
+    { "code": "IE", "name": "Ireland",              "currency": "EUR", "locale": "en-IE", "tier": "t1", "labels": "stage", "detect": true },
+    { "code": "CH", "name": "Switzerland",           "currency": "CHF", "locale": "de-CH", "tier": "t1", "labels": "stage", "detect": true },
+    { "code": "DE", "name": "Germany",               "currency": "EUR", "locale": "de-DE", "tier": "t1", "labels": "stage", "detect": true },
+    { "code": "ES", "name": "Spain",                 "currency": "EUR", "locale": "es-ES", "tier": "t1", "labels": "stage", "detect": true },
+
+    { "code": "SA", "name": "Saudi Arabia",          "currency": "SAR", "locale": "en",    "tier": "t2", "labels": "stage", "detect": true },
+    { "code": "OM", "name": "Oman",                  "currency": "OMR", "locale": "en",    "tier": "t2", "labels": "stage", "detect": true },
+    { "code": "BH", "name": "Bahrain",               "currency": "BHD", "locale": "en",    "tier": "t2", "labels": "stage", "detect": true },
+    { "code": "CN", "name": "China",                 "currency": "CNY", "locale": "zh-CN", "tier": "t2", "labels": "stage", "detect": true },
+    { "code": "MY", "name": "Malaysia",              "currency": "MYR", "locale": "en-MY", "tier": "t2", "labels": "stage", "detect": true },
+    { "code": "TH", "name": "Thailand",              "currency": "THB", "locale": "th-TH", "tier": "t2", "labels": "stage", "detect": true },
+    { "code": "TR", "name": "Türkiye",               "currency": "TRY", "locale": "tr-TR", "tier": "t2", "labels": "stage", "detect": true },
+    { "code": "MX", "name": "Mexico",                "currency": "MXN", "locale": "es-MX", "tier": "t2", "labels": "stage", "detect": true },
+    { "code": "BR", "name": "Brazil",                "currency": "BRL", "locale": "pt-BR", "tier": "t2", "labels": "stage", "detect": true },
+    { "code": "ZA", "name": "South Africa",          "currency": "ZAR", "locale": "en-ZA", "tier": "t2", "labels": "grade", "detect": true },
+
+    { "code": "IN", "name": "India",                 "currency": "INR", "locale": "en-IN", "tier": "t3", "labels": "class", "detect": true },
+    { "code": "ID", "name": "Indonesia",             "currency": "IDR", "locale": "id-ID", "tier": "t3", "labels": "stage", "detect": true },
+    { "code": "PH", "name": "Philippines",           "currency": "PHP", "locale": "en-PH", "tier": "t3", "labels": "stage", "detect": true },
+    { "code": "VN", "name": "Vietnam",               "currency": "VND", "locale": "vi-VN", "tier": "t3", "labels": "stage", "detect": true },
+    { "code": "KE", "name": "Kenya",                 "currency": "KES", "locale": "en-KE", "tier": "t3", "labels": "stage", "detect": true },
+    { "code": "LK", "name": "Sri Lanka",             "currency": "LKR", "locale": "en",    "tier": "t3", "labels": "stage", "detect": true },
+    { "code": "MA", "name": "Morocco",               "currency": "MAD", "locale": "fr-MA", "tier": "t3", "labels": "stage", "detect": true },
+
+    { "code": "PK", "name": "Pakistan",              "currency": "PKR", "locale": "en-PK", "tier": "t4", "labels": "class", "detect": true },
+    { "code": "BD", "name": "Bangladesh",            "currency": "BDT", "locale": "bn-BD", "tier": "t4", "labels": "class", "detect": true },
+    { "code": "NG", "name": "Nigeria",               "currency": "NGN", "locale": "en-NG", "tier": "t4", "labels": "stage", "detect": true },
+    { "code": "EG", "name": "Egypt",                 "currency": "EGP", "locale": "ar-EG", "tier": "t4", "labels": "stage", "detect": true },
+    { "code": "GH", "name": "Ghana",                 "currency": "GHS", "locale": "en-GH", "tier": "t4", "labels": "stage", "detect": true },
+    { "code": "ZW", "name": "Zimbabwe",              "currency": "USD", "locale": "en",    "tier": "t4", "labels": "stage", "detect": true }
+  ]
+}
